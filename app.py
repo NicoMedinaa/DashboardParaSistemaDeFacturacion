@@ -26,7 +26,7 @@ def index():
     return render_template('./index.html')
 
 @app.route('/productos')
-def get_all_PrProductoss():
+def get_all_Productos():
     #acceso a la db -> SELECT FROM ..
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM productos')
@@ -68,12 +68,12 @@ def create_producto():
     # acceso a la db -> 
     cur = mysql.connection.cursor()
     #Control si existye el nombre endicado
-    cur.execute('SELECT * FROM productos WHERE Nombre = %s', (nombre,))
+    cur.execute('SELECT * FROM productos WHERE nombre = %s', (nombre,))
     row = cur.fetchone()
     if row:
         return jsonify({"message" : "producto ya registrado"})
     #INSERT INTO .. control de variables..
-    cur.execute('INSERT INTO productos (Nombre, Descripción, Precio, Stock, Categoría, Proveedor, Fecha_Lanzamiento, Fecha_Vencimiento) VALUES (%s, %s, %s, %s,%s, %s, %s, %s)', (nombre,descripcion,precio,stock,categoria,proveedor,fecha_lanzamiento,fecha_vencimiento))
+    cur.execute('INSERT INTO productos (nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento) VALUES (%s, %s, %s, %s,%s, %s, %s, %s)', (nombre,descripcion,precio,stock,categoria,proveedor,fecha_lanzamiento,fecha_vencimiento))
     mysql.connection.commit()
     # Obtener el id del registro creado
     cur.execute('SELECT LAST_INSERT_ID()')
@@ -81,15 +81,56 @@ def create_producto():
     print(row[0])
     
     return jsonify({"id": row[0],
-                    'Nombre':nombre,
-                    'Descripcion':descripcion,
-                    "Precio":precio,
-                    "Stock":stock,
-                    "Categoria":categoria,
-                    "Proovedor":proveedor,
-                    "Fecha Lanzamiento":fecha_lanzamiento,
-                    "Fecha Vencimiento":fecha_vencimiento
+                    'nombre':nombre,
+                    'descripcion':descripcion,
+                    "precio":precio,
+                    "stock":stock,
+                    "categoria":categoria,
+                    "proovedor":proveedor,
+                    "fecha Lanzamiento":fecha_lanzamiento,
+                    "fecha Vencimiento":fecha_vencimiento
                     })
+
+@app.route('/productos/<int:id>', methods=['PUT'])
+def update_productos(id):
+    body = request.get_json()
+    nombre = body['nombre']
+    descripcion = body['descripcion']
+    precio = body['precio']
+    stock = body['stock']
+    categoria = body['categoria']
+    proveedor = body['proveedor']
+    fecha_lanzamiento = body['fecha_lanzamiento']
+    fecha_vencimiento = body['fecha_vencimiento']
+    
+    #acceso a la db -> SET  ---- WHERE ...
+  #UPDATE SET ... WHERE ... 
+    cur = mysql.connection.cursor()
+    cur.execute('UPDATE productos SET nombre = %s, descripcion = %s, precio = %s, stock = %s , categoria = %s,proveedor = %s, fecha_lanzamiento = %s,fecha_vencimiento = %s WHERE id = %s', (nombre,descripcion,precio,stock,categoria,proveedor,fecha_lanzamiento,fecha_vencimiento,id))
+    mysql.connection.commit()
+ 
+
+    return jsonify({"id": id,
+                    'nombre':nombre,
+                    'descripcion':descripcion,
+                    "precio":precio,
+                    "stock":stock,
+                    "categoria":categoria,
+                    "proovedor":proveedor,
+                    "fecha_lanzamiento":fecha_lanzamiento,
+                    "fecha_vencimiento":fecha_vencimiento
+                    })
+
+
+@app.route('/persons/<int:id>', methods=['DELETE'])
+def delete_person(id):
+    #acceso a la db -> DELETE FROM WHERE...
+
+    cur = mysql.connection.cursor()
+    cur.execute('DELETE FROM person WHERE id = {0}'.format(id))
+    mysql.connection.commit()
+
+    return jsonify({"message": "deleted", "id": id})
 
 
 if __name__ == '__main__':
