@@ -6,7 +6,7 @@ class Categorias():
 
     def to_json(self):
         return {
-            "ID" : self._id,
-            "Nombre" : self._nombre,
-            "Descripción" : self._descripcion,
+            "id" : self._id,
+            "nombre" : self._nombre,
+            "descripcion" : self._descripcion,
         }

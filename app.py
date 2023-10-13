@@ -86,7 +86,7 @@ def create_producto():
                     "precio":precio,
                     "stock":stock,
                     "categoria":categoria,
-                    "proovedor":proveedor,
+                    "proveedor":proveedor,
                     "fecha Lanzamiento":fecha_lanzamiento,
                     "fecha Vencimiento":fecha_vencimiento
                     })
@@ -106,9 +106,8 @@ def update_productos(id):
     #acceso a la db -> SET  ---- WHERE ...
   #UPDATE SET ... WHERE ... 
     cur = mysql.connection.cursor()
-    cur.execute('UPDATE productos SET nombre = %s, descripcion = %s, precio = %s, stock = %s , categoria = %s,proveedor = %s, fecha_lanzamiento = %s,fecha_vencimiento = %s WHERE id = %s', (nombre,descripcion,precio,stock,categoria,proveedor,fecha_lanzamiento,fecha_vencimiento,id))
+    cur.execute('UPDATE productos SET nombre = %s, descripcion = %s, precio = %s,categoria = %s,proveedor = %s, stock = %s, fecha_lanzamiento = %s, fecha_vencimiento = %s WHERE id = %s', (nombre,descripcion,precio,categoria,proveedor,stock,fecha_lanzamiento,fecha_vencimiento, id))
     mysql.connection.commit()
- 
 
     return jsonify({"id": id,
                     'nombre':nombre,
@@ -116,18 +115,18 @@ def update_productos(id):
                     "precio":precio,
                     "stock":stock,
                     "categoria":categoria,
-                    "proovedor":proveedor,
+                    "proveedor":proveedor,
                     "fecha_lanzamiento":fecha_lanzamiento,
                     "fecha_vencimiento":fecha_vencimiento
                     })
 
 
-@app.route('/persons/<int:id>', methods=['DELETE'])
-def delete_person(id):
+@app.route('/productos/<int:id>', methods=['DELETE'])
+def delete_productos(id):
     #acceso a la db -> DELETE FROM WHERE...
 
     cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM person WHERE id = {0}'.format(id))
+    cur.execute('DELETE FROM productos WHERE id = {0}'.format(id))
     mysql.connection.commit()
 
     return jsonify({"message": "deleted", "id": id})
