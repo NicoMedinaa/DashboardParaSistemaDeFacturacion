@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Producto</title>
     <script src="{{ url_for('static', filename='app.js') }}"></script>
-
 </head>
 <body> 
     <h2>Ingrese los detalles del producto</h2>
     <form id="productoForm">
+        <label for="id">ID del Producto:</label>
+        <input type="text" id="id" name="id" required><br><br>
+
         <label for="nombre">Nombre del Producto:</label>
         <input type="text" id="nombre" name="nombre" required><br><br>
 
@@ -23,21 +25,42 @@
         <input type="number" id="stock" name="stock" required><br><br>
 
         <label for="categoria">Categoría:</label>
-        <input type="text" id="categoria" name="categoria" required><br><br>
+        <select id="categoria" name="categoria" required>
+            <option value="">Selecciona una categoría</option>
+            {% for categoria in categorias %}
+                <option value="{{ categoria[0] }}">{{ categoria[0] }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <label for="proveedor">Proveedor:</label>
-        <input type="text" id="proveedor" name="proveedor" required><br><br>
+        <select id="proveedor" name="proveedor" required>
+            <option value="">Selecciona un proveedor</option>
+            {% for proveedor in proveedores %}
+                <option value="{{ proveedor[0] }}">{{ proveedor[0] }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <label for="fecha_lanzamiento">Fecha de Lanzamiento:</label>
         <input type="date" id="fecha_lanzamiento" name="fecha_lanzamiento" required><br><br>
 
         <label for="fecha_vencimiento">Fecha de Vencimiento:</label>
         <input type="date" id="fecha_vencimiento" name="fecha_vencimiento"><br><br>
+        
+        <label for="fecha_modificacion">Fecha de Modificación:</label>
+        <input type="date" id="fecha_modificacion" name="fecha_modificacion"><br><br>
+
+        <label for="empresa">Empresa:</label>
+        <select id="empresa" name="empresa" required>
+            <option value="">Selecciona una empresa</option>
+            {% for empresa in empresas %}
+                <option value="{{ empresa[0] }}">{{ empresa[0] }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <input type="submit" value="Guardar Producto">
     </form>
 
     <div id="mensaje"></div>
-
 </body>
 </html>
+
