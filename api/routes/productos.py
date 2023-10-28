@@ -65,9 +65,10 @@ def create_producto():
 def update_productos(id):
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
-    rows= cur.fetchall()
+    rows = cur.fetchall()
     for row in rows:
-        codigo_barra= row[1]
+        id = row[0]
+        codigo_barra = row[1]
         nombre = row[2]
         descripcion = row[3]
         precio = row[4]
@@ -80,45 +81,50 @@ def update_productos(id):
         empresa = row[11]
     
     body = request.get_json()
-    # codigo_barra= body['codigo_barra']
-    # nombre = body['nombre']
-    # descripcion = body['descripcion']
-    # precio = body['precio']
-    # stock = body['stock']
-    # categoria = body['categoria']
-    # proveedor = body['proveedor']
-    # fecha_lanzamiento = body['fecha_lanzamiento']
-    # fecha_vencimiento = body['fecha_vencimiento']
-    # fecha_modificacion = body['fecha_modificacion']
-    # empresa = body['empresa']
-    if body['codigo_barra'] != codigo_barra or body['nombre'] != nombre or body['descripcion'] != descripcion or body['precio'] != precio or body['stock'] != stock or body['categoria'] != categoria or body['proveedor'] != proveedor or body['fecha_lanzamiento'] != fecha_lanzamiento or body['fecha_vencimiento'] != fecha_vencimiento or body['fecha_modificacion'] != fecha_modificacion or body['empresa'] != empresa: 
-    
-    #acceso a la db -> SET  ---- WHERE ...
-  #UPDATE SET ... WHERE ... 
+    codigo_barraN= body['codigo_barra']
+    nombreN = body['nombre']
+    descripcionN = body['descripcion']
+    precioN = body['precio']
+    stockN = body['stock']
+    categoriaN = body['categoria']
+    proveedorN = body['proveedor']
+    #fecha_lanzamientoN = body['fecha_lanzamiento']
+    fecha_vencimientoN = body['fecha_vencimiento']
+    #fecha_modificacionN = body['fecha_modificacion']
+    empresaN = body['empresa']
+    if str(codigo_barraN) != str(codigo_barra) or str(nombreN) != str(nombre) or str(descripcionN) != str(descripcion) or str(precioN) != str(precio) or str(stockN) != str(stock) or str(categoriaN) != str(categoria) or str(proveedorN) != str(proveedor) or str(empresaN) != str(empresa) or str(fecha_vencimientoN) != str(fecha_vencimiento):
+        #acceso a la db -> SET  ---- WHERE ...
+        #UPDATE SET ... WHERE ... 
         cur = mysql.connection.cursor()
-        cur.execute('UPDATE productos SET nombre = %s, descripcion = %s, precio = %s,categoria = %s,proveedor = %s, stock = %s, fecha_lanzamiento = %s, fecha_vencimiento = %s, fecha_modificacion = %s, empresa = %s WHERE id = %s', (nombre,descripcion,precio,categoria,proveedor,stock,fecha_lanzamiento,fecha_vencimiento,fecha_modificacion,empresa, id))
+        cur.execute('UPDATE productos SET codigo_barra = %s, nombre = %s, descripcion = %s, precio = %s,categoria = %s,proveedor = %s, stock = %s, fecha_vencimiento = %s, empresa = %s WHERE id = %s', (codigo_barraN,nombreN,descripcionN,precioN,categoriaN,proveedorN,stockN,fecha_vencimientoN,empresaN, id))
         mysql.connection.commit()
 
         return jsonify({"id": id,
-                        'nombre':nombre,
-                        'descripcion':descripcion,
-                        "precio":precio,
-                        "stock":stock,
-                        "categoria":categoria,
-                        "proveedor":proveedor,
-                        "fecha Lanzamiento":fecha_lanzamiento,
-                        "fecha Vencimiento":fecha_vencimiento,
-                        "fecha_modificacion":fecha_modificacion,
-                        "empresa":empresa
+                        'codigo_barra': codigo_barraN,
+                        'nombre':nombreN,
+                        'descripcion':descripcionN,
+                        "precio":precioN,
+                        "stock":stockN,
+                        "categoria":categoriaN,
+                        "proveedor":proveedorN,
+                        "fecha Lanzamiento":fecha_lanzamiento,#siempre va a ser igual
+                        "fecha Vencimiento":fecha_vencimientoN,
+                        "fecha_modificacion":fecha_modificacion,#siempre va a ser igual
+                        "empresa":empresaN,
+                        'message': 'Cambios realizados con Exito'
                         })
-    return jsonify({'message': 'no se realizo ningun cambio'})
+    else:                    
+        return jsonify({'message': 'no se realizo ningun cambio'})
 
 @app.route('/productos/<int:id>', methods=['DELETE'])
 def delete_productos(id):
     #acceso a la db -> DELETE FROM WHERE...
-
     cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM productos WHERE id = {0}'.format(id))
-    mysql.connection.commit()
-
-    return jsonify({"message": "deleted", "id": id})
+    cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
+    row = cur.fetchone()
+    if row is None:
+        return jsonify({"message": 'El elemento no existe'})
+    else:
+        cur.execute('DELETE FROM productos WHERE id = {0}'.format(id))
+        mysql.connection.commit()
+        return jsonify({"message": "deleted", "id": id})
