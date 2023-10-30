@@ -8,6 +8,7 @@ CREATE TABLE empresa (
     email VARCHAR(100) NOT NULL,
     fechaIngreso DATE NOT NULL,
     CUIT_CUIL VARCHAR(12) NOT NULL UNIQUE KEY
+    FOREIGN KEY (nombre) REFERENCES user(nombre),--linea nueva y agregue user
 );
 -- Crear la tabla de categoria
 CREATE TABLE categoria (
@@ -60,8 +61,8 @@ CREATE TABLE servicios (
     unidadMedida VARCHAR(5),
     fechaInicio DATE NOT NULL,
     fechaFinalizacion DATE NOT NULL,
-    fechaCreacion DATE NOT NULL,
-    fechaModificacion DATE NOT NULL,
+    fechaCreacion DATE TIMESTAMP, --now
+    fechaModificacion TIMESTAMP, -- now and update
     estado VARCHAR(10),
     FOREIGN KEY (empresa) REFERENCES empresa(nombre),
     FOREIGN KEY (categoria) REFERENCES categoria(nombre)
@@ -92,3 +93,8 @@ VALUES ('123456789', 'iPhone 13 Pro', 'El último smartphone de Apple con pantal
 INSERT INTO productos (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa)
 VALUES ('987654321', 'Café Arabica Premium', 'Granos de café Arabica de alta calidad, tostados y molidos.', 12.99, 100, 'Alimentos', 'Proveedor 2', '2023-10-01', '2024-10-01', CURRENT_TIMESTAMP, 'Empresa B');
 
+CREATE TABLE user (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(255) NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
+);

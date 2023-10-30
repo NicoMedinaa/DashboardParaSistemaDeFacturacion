@@ -116,8 +116,8 @@ def update_productos(id):
     else:                    
         return jsonify({'message': 'no se realizo ningun cambio'})
 
-@app.route('/productos/<int:id>', methods=['DELETE'])
-def delete_productos(id):
+@app.route('/productos/<int:id>', methods=['DELETE']) #preguntar por codigo de barras, el id solo es para nosotros
+def delete_productos(id): 
     #acceso a la db -> DELETE FROM WHERE...
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
