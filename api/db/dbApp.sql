@@ -8,8 +8,10 @@ CREATE TABLE empresa ( --- dejar solo empresa para el registro de usuario
     email VARCHAR(100) NOT NULL,
     fechaIngreso DATE NOT NULL, --NOW
     CUIT_CUIL VARCHAR(12) NOT NULL UNIQUE KEY
-    FOREIGN KEY (nombre) REFERENCES user(nombre),--linea nueva y agregue user
+    FOREIGN KEY (nombre) REFERENCES user(nombre),
+    password VARCHAR(255) NOT NULL,
 );
+
 -- Crear la tabla de categoria
 CREATE TABLE categoria (
     nombre VARCHAR(50) PRIMARY KEY NOT NULL, 
@@ -107,7 +109,7 @@ CREATE TABLE productos (
     FOREIGN KEY (proveedor) REFERENCES proveedor(nombre)
 );
 INSERT INTO productos (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa)
-VALUES ('123456789', 'iPhone 13 Pro', 'El último smartphone de Apple con pantalla ProMotion y cámara mejorada.', 1099.99, 50, 'Electrónica', 'Proveedor 1', '2023-09-24', NULL, CURRENT_TIMESTAMP, 'Empresa A');
+VALUES ('123456789', 'iPhone 13 Pro', 'El último smartphone de Apple con pantalla ProMotion y cámara mejorada.', 1099.99, 50, 'Electrónica', 'Proveedor 1', '2023-09-24', NULL, CURRENT_TIMESTAMP, 'A');
 
 INSERT INTO productos (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa)
-VALUES ('987654321', 'Café Arabica Premium', 'Granos de café Arabica de alta calidad, tostados y molidos.', 12.99, 100, 'Alimentos', 'Proveedor 2', '2023-10-01', '2024-10-01', CURRENT_TIMESTAMP, 'Empresa B');
+VALUES ('987654321', 'Café Arabica Premium', 'Granos de café Arabica de alta calidad, tostados y molidos.', 12.99, 100, 'Alimentos', 'Proveedor 2', '2023-10-01', '2024-10-01', CURRENT_TIMESTAMP, 'B');

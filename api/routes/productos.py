@@ -4,11 +4,11 @@ from flask import jsonify, request
 from api.utils import token_required, client_resource, user_resources
 from api.db.db import mysql
 
-@app.route('/productos')
-def get_all_Productos():
-    #acceso a la db -> SELECT FROM ..
+@app.route('/productos/<string:empresa>')
+def get_all_Productos(empresa):
+
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM productos')
+    cur.execute('SELECT * FROM productos WHERE empresa = %s',(empresa,))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
@@ -18,10 +18,10 @@ def get_all_Productos():
         productosList.append(objProductos.to_json())
     return jsonify({"Productos": productosList})#render_template('lista.html', productos=productosList)##,jsonify(productosList)
 
-@app.route('/productos/<int:id>', methods=['GET'])
-def get_Productos_by_id(id):
+@app.route('/productos/<string:empresa>/<int:id>', methods=['GET'])
+def get_Productos_by_id(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM productos WHERE id = {0}'.format(id))
+    cur.execute('SELECT * FROM productos WHERE id = %s AND empresa = %s',(id, empresa))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
@@ -31,19 +31,20 @@ def get_Productos_by_id(id):
         return jsonify(objProductos.to_json()) #dato en tipo JSON   
     return jsonify({"message" : "id not found"})
 
-@app.route('/productos', methods=['POST'])
-def create_producto():
+@app.route('/productos/<string:empresa>', methods=['POST'])
+def create_producto(empresa):
+    #print(type(empresa))
     body = request.get_json()
     codigo_barra = body['codigo_barra']
-    # Verificar si el producto ya existe en la base de datos
+
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM productos WHERE codigo_barra = %s', (codigo_barra,))
+    cur.execute('SELECT * FROM productos WHERE empresa = %s AND codigo_barra = %s',(empresa,codigo_barra))
     row = cur.fetchone()
-    if row:
-        return jsonify({"message" : "Producto ya registrado"}),400
+    if row is not None:
+        return jsonify({"message" : "Producto ya registrado"}),409
     
-    # Si el producto no existe, procede a insertarlo en la base de datos
     nombre = body['nombre']
+    empresa = empresa
     descripcion = body['descripcion']
     precio = body['precio']
     stock = body['stock']
@@ -52,19 +53,18 @@ def create_producto():
     fecha_lanzamiento = body['fecha_lanzamiento']
     fecha_vencimiento = body['fecha_vencimiento']
     fecha_modificacion = body['fecha_modificacion']
-    empresa = body['empresa']
 
     cur.execute('INSERT INTO productos (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa))
     cur.execute('SELECT LAST_INSERT_ID()')
     row = cur.fetchone()
     mysql.connection.commit()
     
-    return jsonify({'id':row[0],'codigo_barra': codigo_barra, 'nombre':nombre, 'descripcion':descripcion, "precio":precio, "stock":stock, "categoria":categoria, "proveedor":proveedor, "fecha_lanzamiento":fecha_lanzamiento, "fecha_vencimiento":fecha_vencimiento, "fecha_modificacion":fecha_modificacion, "empresa":empresa})
+    return jsonify({'codigo_barra': codigo_barra, 'nombre':nombre, 'descripcion':descripcion, "precio":precio, "stock":stock, "categoria":categoria, "proveedor":proveedor, "fecha_lanzamiento":fecha_lanzamiento, "fecha_vencimiento":fecha_vencimiento, "fecha_modificacion":fecha_modificacion, "empresa":empresa})
 
-@app.route('/productos/<int:id>', methods=['PUT'])
-def update_productos(id):
+@app.route('/productos/<string:empresa>/<int:id>', methods=['PUT'])
+def update_productos(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM productos WHERE id = %s AND empresa = %s', (id,empresa))
     row = cur.fetchone()
     if row is None:
         return jsonify({'message': 'Producto con ID {} no encontrado'.format(id)})
