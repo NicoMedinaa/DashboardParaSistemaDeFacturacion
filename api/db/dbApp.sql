@@ -1,12 +1,12 @@
 CREATE DATABASE IF NOT EXISTS  sistemaFacturacion;
 USE sistemaFacturacion;
 -- Crear la tabla de empresa la cual va a adquirir nuestro sistema
-CREATE TABLE empresa (
+CREATE TABLE empresa ( --- dejar solo empresa para el registro de usuario
     nombre VARCHAR(50) PRIMARY KEY NOT NULL,
     direccion VARCHAR(255) NOT NULL, 
     telefono VARCHAR(15) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    fechaIngreso DATE NOT NULL,
+    fechaIngreso DATE NOT NULL, --NOW
     CUIT_CUIL VARCHAR(12) NOT NULL UNIQUE KEY
     FOREIGN KEY (nombre) REFERENCES user(nombre),--linea nueva y agregue user
 );
@@ -18,11 +18,30 @@ CREATE TABLE categoria (
 
 -- Crear la tabla de proveedor
 CREATE TABLE proveedor (
-    nombre VARCHAR(50) PRIMARY KEY NOT NULL,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) UNIQUE KEY NOT NULL,
     direccion VARCHAR(255),
     telefono VARCHAR(15),
     email VARCHAR(100),
     descripcion TEXT
+);
+
+INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono)
+VALUES (
+  'Proveedor de productos A',
+  'Calle Proveedor 1',
+  'proveedor1@example.com',
+  'Proveedor 1',
+  '111-222-3333'
+);
+
+INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono)
+VALUES (
+  'Proveedor de productos B',
+  'Avenida Proveedor 2',
+  'proveedor2@example.com',
+  'Proveedor 2',
+  '444-555-6666'
 );
 
 
@@ -92,9 +111,3 @@ VALUES ('123456789', 'iPhone 13 Pro', 'El último smartphone de Apple con pantal
 
 INSERT INTO productos (codigo_barra, nombre, descripcion, precio, stock, categoria, proveedor, fecha_lanzamiento, fecha_vencimiento, fecha_modificacion, empresa)
 VALUES ('987654321', 'Café Arabica Premium', 'Granos de café Arabica de alta calidad, tostados y molidos.', 12.99, 100, 'Alimentos', 'Proveedor 2', '2023-10-01', '2024-10-01', CURRENT_TIMESTAMP, 'Empresa B');
-
-CREATE TABLE user (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(255) NOT NULL,
-    contraseña VARCHAR(255) NOT NULL,
-);

@@ -67,21 +67,22 @@ def create_servicio():
 def update_servicios(id):
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM servicios WHERE id = %s', (id,))
-    rows = cur.fetchall()
-    for row in rows:
-        id = row[0]
-        nombre = row[1]
-        categoria = row[2]
-        empresa = row[3]
-        descripcion = row[4]
-        precio = row[5]
-        duracion = row[6]
-        unidadMedida = row[7]
-        fechaInicio = row[8]
-        fechaFinalizacion = row[9]
-        fechaCreacion = row[10]
-        fechaModificacion = row[11]
-        estado = row[12]
+    row = cur.fetchone()
+    if row is None:
+        return jsonify({'message': 'Servicio con ID {} no encontrado'.format(id)})
+    id = row[0]
+    nombre = row[1]
+    categoria = row[2]
+    empresa = row[3]
+    descripcion = row[4]
+    precio = row[5]
+    duracion = row[6]
+    unidadMedida = row[7]
+    fechaInicio = row[8]
+    fechaFinalizacion = row[9]
+    fechaCreacion = row[10]
+    fechaModificacion = row[11]
+    estado = row[12]
     
     body = request.get_json()
     nombreN = body['nombre']

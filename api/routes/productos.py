@@ -65,20 +65,21 @@ def create_producto():
 def update_productos(id):
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
-    rows = cur.fetchall()
-    for row in rows:
-        id = row[0]
-        codigo_barra = row[1]
-        nombre = row[2]
-        descripcion = row[3]
-        precio = row[4]
-        stock = row[5]
-        categoria = row[6]
-        proveedor = row[7]
-        fecha_lanzamiento = row[8]
-        fecha_vencimiento = row[9]
-        fecha_modificacion = row[10]
-        empresa = row[11]
+    row = cur.fetchone()
+    if row is None:
+        return jsonify({'message': 'Producto con ID {} no encontrado'.format(id)})
+    id = row[0]
+    codigo_barra = row[1]
+    nombre = row[2]
+    descripcion = row[3]
+    precio = row[4]
+    stock = row[5]
+    categoria = row[6]
+    proveedor = row[7]
+    fecha_lanzamiento = row[8]
+    fecha_vencimiento = row[9]
+    fecha_modificacion = row[10]
+    empresa = row[11]
     
     body = request.get_json()
     codigo_barraN= body['codigo_barra']
