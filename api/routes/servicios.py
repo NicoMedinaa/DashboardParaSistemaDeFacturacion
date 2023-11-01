@@ -5,10 +5,10 @@ from api.utils import token_required, client_resource, user_resources
 from api.db.db import mysql
 from datetime import datetime
 
-@app.route('/servicios')
-def get_all_servicios():
+@app.route('/servicios/<string:empresa>')
+def get_all_servicios(empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM servicios')
+    cur.execute('SELECT * FROM servicios WHERE empresa = %s',(empresa,))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
@@ -16,31 +16,31 @@ def get_all_servicios():
     for row in data:
         objServicios = Servicios(row)
         serviciosList.append(objServicios.to_json())
-    return jsonify({"Productos": serviciosList})
+    return jsonify({"Servicio": serviciosList})
 
-@app.route('/servicios/<int:id>', methods=['GET'])
-def get_servicios_by_id(id):
+@app.route('/servicios/<string:empresa>/<int:id>', methods=['GET'])
+def get_servicios_by_id(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM servicios WHERE id = {0}'.format(id))
+    cur.execute('SELECT * FROM servicios WHERE id = %s AND empresa = %s',(id,empresa))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
-    if cur.rowcount >0 :
+    if cur.rowcount > 0 :
         objServicios =Servicios(data[0])
         #acceso a BD -> SELECT FROM 
         return jsonify(objServicios.to_json()) #dato en tipo JSON   
     return jsonify({"message" : "id not found"})
 
-@app.route('/servicios', methods=['POST'])
-def create_servicio():
+@app.route('/servicios/<string:empresa>', methods=['POST'])
+def create_servicio(empresa):
     body = request.get_json()
     nombreServicio = body['nombre']
     # Verificar si el producto ya existe en la base de datos
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM servicios WHERE nombre = %s', (nombreServicio,))
+    cur.execute('SELECT * FROM servicios WHERE nombre = %s AND empresa = %s', (nombreServicio,empresa))
     row = cur.fetchone()
-    if row:
-        return jsonify({"message" : "Servicio ya registrado"}),400
+    if row is not None:
+        return jsonify({"message" : "Servicio ya registrado"}),409
     
     # Si el producto no existe, procede a insertarlo en la base de datos
     nombre = body['nombre']
@@ -51,9 +51,6 @@ def create_servicio():
     unidadMedida = body['unidadMedida']
     fechaInicio = body['fechaInicio']
     fechaFinalizacion = body['fechaFinalizacion']
-    #fechaCreacion = body['fechaCreacion']
-    #fechaModificacion = body['fechaModificacion']
-    empresa = body['empresa']
     estado = body['estado']
 
     cur.execute('INSERT INTO servicios (nombre, descripcion, precio, duracion, categoria, unidadMedida, fechaInicio, fechaFinalizacion, empresa, estado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (nombre, descripcion, precio, duracion, categoria, unidadMedida, fechaInicio, fechaFinalizacion, empresa, estado))
@@ -63,17 +60,17 @@ def create_servicio():
     
     return jsonify({'id':row[0], 'nombre':nombre, 'descripcion':descripcion, "precio":precio, "duracion":duracion, "categoria":categoria, "unidadMedida":unidadMedida, "fechaInicio":fechaInicio, "fechaFinalizacion":fechaFinalizacion,"empresa":empresa, "estado":estado})
 
-@app.route('/servicios/<int:id>', methods=['PUT'])
-def update_servicios(id):
+@app.route('/servicios/<string:empresa>/<int:id>', methods=['PUT'])
+def update_servicios(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM servicios WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM servicios WHERE id = %s AND empresa = %s', (id,empresa))
     row = cur.fetchone()
     if row is None:
         return jsonify({'message': 'Servicio con ID {} no encontrado'.format(id)})
     id = row[0]
     nombre = row[1]
     categoria = row[2]
-    empresa = row[3]
+    #empresa = row[3]
     descripcion = row[4]
     precio = row[5]
     duracion = row[6]
@@ -95,11 +92,11 @@ def update_servicios(id):
     fechaFinalizacionN = body['fechaFinalizacion']
     #fechaCreacionN = body['fechaCreacion'] # Se crea una vez sola, en el alta del cliente
     #fechaModificacionN = body['fechaModificacion'] #es NOW
-    empresaN = body['empresa']
+    #empresaN = body['empresa']
     estadoN = body['estado']
-    if str(nombreN) != str(nombre) or str(descripcionN) != str(descripcion) or str(precioN) != str(precio) or str(duracionN) != str(duracion) or str(categoriaN) != str(categoria) or str(unidadMedidaN) != str(unidadMedida) or str(empresaN) != str(empresa) or str(estadoN) != str(estado) or str(fechaInicioN) != str(fechaInicio) or str(fechaFinalizacionN) != str(fechaFinalizacion):
+    if str(nombreN) != str(nombre) or str(descripcionN) != str(descripcion) or str(precioN) != str(precio) or str(duracionN) != str(duracion) or str(categoriaN) != str(categoria) or str(unidadMedidaN) != str(unidadMedida) or str(estadoN) != str(estado) or str(fechaInicioN) != str(fechaInicio) or str(fechaFinalizacionN) != str(fechaFinalizacion):
         #cur = mysql.connection.cursor()
-        cur.execute('UPDATE servicios SET nombre = %s, descripcion = %s, precio = %s, categoria = %s, duracion = %s, unidadMedida = %s, fechaInicio = %s, fechaFinalizacion = %s, empresa = %s, estado = %s WHERE id = %s', (nombreN, descripcionN, precioN, categoriaN, duracionN, unidadMedidaN, fechaInicioN, fechaFinalizacionN, empresaN, estadoN, id))
+        cur.execute('UPDATE servicios SET nombre = %s, descripcion = %s, precio = %s, categoria = %s, duracion = %s, unidadMedida = %s, fechaInicio = %s, fechaFinalizacion = %s, empresa = %s, estado = %s WHERE id = %s', (nombreN, descripcionN, precioN, categoriaN, duracionN, unidadMedidaN, fechaInicioN, fechaFinalizacionN, empresa, estadoN, id))
         mysql.connection.commit()
         #volver a leer asi mustro datos reales como el timeNow
         return jsonify({"id": id,
@@ -113,18 +110,18 @@ def update_servicios(id):
                         "fechaFinalizacionN":fechaFinalizacionN,
                         "fechaCreacion":fechaCreacion,
                         "fechaModificacion": datetime.now(),
-                        "empresa":empresaN,
+                        "empresa":empresa,
                         "estado": estadoN,
                         'message': 'Cambios realizados con Exito'
                         })
     else:                    
         return jsonify({'message': 'no se realizo ningun cambio'})
 
-@app.route('/servicios/<int:id>', methods=['DELETE']) #preguntar por codigo de barras, el id solo es para nosotros
-def delete_servicios(id): 
+@app.route('/servicios/<string:empresa>/<int:id>', methods=['DELETE']) #preguntar por codigo de barras, el id solo es para nosotros
+def delete_servicios(id,empresa): 
     #acceso a la db -> DELETE FROM WHERE...
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM servicios WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM servicios WHERE id = %s AND empresa = %s', (id,empresa))
     row = cur.fetchone()
     if row is None:
         return jsonify({"message": 'El elemento no existe'})

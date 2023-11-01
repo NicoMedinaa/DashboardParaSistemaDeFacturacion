@@ -21,29 +21,33 @@ CREATE TABLE categoria (
 -- Crear la tabla de proveedor
 CREATE TABLE proveedor (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50) UNIQUE KEY NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
     direccion VARCHAR(255),
     telefono VARCHAR(15),
     email VARCHAR(100),
     descripcion TEXT
+    empresa VARCHAR(50), 
+    FOREIGN KEY (empresa) REFERENCES empresa(nombre),
 );
 
-INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono)
+INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono,empresa)
 VALUES (
   'Proveedor de productos A',
   'Calle Proveedor 1',
   'proveedor1@example.com',
   'Proveedor 1',
-  '111-222-3333'
+  '111-222-3333',
+  'B'
 );
 
-INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono)
+INSERT INTO proveedor (descripcion, direccion, email, nombre, telefono,empresa)
 VALUES (
   'Proveedor de productos B',
   'Avenida Proveedor 2',
   'proveedor2@example.com',
   'Proveedor 2',
-  '444-555-6666'
+  '444-555-6666',
+  'A'
 );
 
 
@@ -89,6 +93,12 @@ CREATE TABLE servicios (
     FOREIGN KEY (categoria) REFERENCES categoria(nombre)
 
 );
+
+INSERT INTO servicios (nombre, categoria, empresa, descripcion, precio, duracion, unidadMedida, fechaInicio, fechaFinalizacion, fechaCreacion, fechaModificacion, estado)
+VALUES ('Servicio 3', 'Electrónica', 'A', 'Descripción del servicio 3', 120.75, 45, 'Horas', '2023-11-10', '2023-12-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Activo');
+
+INSERT INTO servicios (nombre, categoria, empresa, descripcion, precio, duracion, unidadMedida, fechaInicio, fechaFinalizacion, fechaCreacion, fechaModificacion, estado)
+VALUES ('Servicio 4', 'Electrónica', 'B', 'Descripción del servicio 4', 90.25, 60, 'Días', '2023-11-20', '2023-12-20', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Inactivo');
 
 -- Crear la tabla de productos le pones una id unica y auto incremental para evitar conflitos en la carda de datos sin repeticion.
 CREATE TABLE productos (

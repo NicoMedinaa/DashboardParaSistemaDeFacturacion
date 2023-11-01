@@ -5,10 +5,10 @@ from api.utils import token_required, client_resource, user_resources
 from api.db.db import mysql
 
 
-@app.route('/proveedor')
-def get_all_proveedor():
+@app.route('/proveedor/<string:empresa>')
+def get_all_proveedor(empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor')
+    cur.execute('SELECT * FROM proveedor WHERE empresa = %s',(empresa,))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
@@ -18,10 +18,10 @@ def get_all_proveedor():
         proveedorList.append(objProveedor.to_json())
     return jsonify({"Proveedores": proveedorList})
 
-@app.route('/proveedor/<int:id>', methods=['GET'])
-def get_proveedor_by_id(id):
+@app.route('/proveedor/<string:empresa>/<int:id>', methods=['GET'])
+def get_proveedor_by_id(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor WHERE id = {0}'.format(id))
+    cur.execute('SELECT * FROM proveedor WHERE id = %s AND empresa = %s',(id,empresa))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
@@ -31,16 +31,16 @@ def get_proveedor_by_id(id):
         return jsonify(objProveedor.to_json()) #dato en tipo JSON   
     return jsonify({"message" : "id not found"})
 
-@app.route('/proveedor', methods=['POST'])
-def create_proveedor():
+@app.route('/proveedor/<string:empresa>', methods=['POST'])
+def create_proveedor(empresa):
     body = request.get_json()
     nombreProveedor = body['nombre']
     # Verificar si el producto ya existe en la base de datos
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor WHERE nombre = %s', (nombreProveedor,))
+    cur.execute('SELECT * FROM proveedor WHERE nombre = %s AND empresa = %s', (nombreProveedor,empresa))
     row = cur.fetchone()
-    if row:
-        return jsonify({"message" : "Proveedor ya registrado"}),400
+    if row is not None:
+        return jsonify({"message" : "Proveedor ya registrado"}),409
     
     # Si el producto no existe, procede a insertarlo en la base de datos
     nombre = body['nombre']
@@ -49,17 +49,17 @@ def create_proveedor():
     email = body['email']
     descripcion = body['descripcion']
 
-    cur.execute('INSERT INTO proveedor (nombre, direccion, telefono, email, descripcion) VALUES ( %s, %s, %s, %s, %s)', (nombre, direccion, telefono, email, descripcion))
+    cur.execute('INSERT INTO proveedor (nombre, direccion, telefono, email, descripcion,empresa) VALUES ( %s, %s, %s, %s, %s, %s)', (nombre, direccion, telefono, email, descripcion,empresa))
     cur.execute('SELECT LAST_INSERT_ID()')
     row = cur.fetchone()
     mysql.connection.commit()
     
-    return jsonify({'id':row[0], 'nombre':nombre, 'descripcion':descripcion, "telefono":telefono, "email":email, "descripcion":descripcion})
+    return jsonify({'id':row[0], 'nombre':nombre, 'descripcion':descripcion, "telefono":telefono, "email":email, "descripcion":descripcion,"empresa:":empresa})
 
-@app.route('/proveedor/<int:id>', methods=['PUT'])
-def update_proveedor(id):
+@app.route('/proveedor/<string:empresa>/<int:id>', methods=['PUT'])
+def update_proveedor(id,empresa):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM proveedor WHERE id = %s AND empresa = %s', (id,empresa))
     
     row=cur.fetchone()
     if row is None:
@@ -94,11 +94,11 @@ def update_proveedor(id):
     else:                    
         return jsonify({'message': 'no se realizo ningun cambio'})
 
-@app.route('/proveedor/<int:id>', methods=['DELETE']) #preguntar por codigo de barras, el id solo es para nosotros
-def delete_proveedor(id): 
+@app.route('/proveedor/<string:empresa>/<int:id>', methods=['DELETE']) #preguntar por codigo de barras, el id solo es para nosotros
+def delete_proveedor(id,empresa): 
     #acceso a la db -> DELETE FROM WHERE...
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor WHERE id = %s', (id,))
+    cur.execute('SELECT * FROM proveedor WHERE id = %s AND empresa = %s', (id,empresa))
     row = cur.fetchone()
     if row is None:
         return jsonify({"message": 'El elemento no existe'})

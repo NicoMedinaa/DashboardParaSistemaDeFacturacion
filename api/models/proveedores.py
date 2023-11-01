@@ -6,6 +6,7 @@ class Proveedores():
         self._telefono= row[3]
         self._email= row[4]
         self._descripcion= row[5]
+        self._empresa= row[6]
 
     def to_json(self):
         return {
@@ -15,4 +16,5 @@ class Proveedores():
             "telefono" : self._telefono,
             "email" : self._email,
             "descripcion" : self._descripcion,
+            "empresa" : self._empresa,
         }
