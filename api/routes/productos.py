@@ -88,12 +88,20 @@ def update_productos(id,empresa):
     precioN = body['precio']
     stockN = body['stock']
     categoriaN = body['categoria']
+    #id_proveedorN = body['id_proveedor']
     proveedorN = body['proveedor']
     fecha_vencimientoN = body['fecha_vencimiento']
 
+    # cur.execute('SELECT nombre FROM proveedor WHERE id = %s', (id_proveedorN,))
+    # proveedor = cur.fetchone()
+    # if proveedor:
+    #     proveedorN = proveedor[0]
+    # else:
+    #     proveedorN = id_proveedorN
+
+
     if str(codigo_barraN) != str(codigo_barra) or str(nombreN) != str(nombre) or str(descripcionN) != str(descripcion) or str(precioN) != str(precio) or str(stockN) != str(stock) or str(categoriaN) != str(categoria) or str(proveedorN) != str(proveedor) or str(fecha_vencimientoN) != str(fecha_vencimiento):
-        #acceso a la db -> SET  ---- WHERE ...
-        #UPDATE SET ... WHERE ... 
+
         cur = mysql.connection.cursor()
         cur.execute('UPDATE productos SET codigo_barra = %s, nombre = %s, descripcion = %s, precio = %s,categoria = %s,proveedor = %s, stock = %s, fecha_vencimiento = %s WHERE id = %s', (codigo_barraN,nombreN,descripcionN,precioN,categoriaN,proveedorN,stockN,fecha_vencimientoN, id))
         mysql.connection.commit()
@@ -106,8 +114,8 @@ def update_productos(id,empresa):
                         "stock":stockN,
                         "categoria":categoriaN,
                         "proveedor":proveedorN,
-                        "fecha Lanzamiento":fecha_lanzamiento,#siempre va a ser igual
-                        "fecha Vencimiento":fecha_vencimientoN,
+                        "fecha_lanzamiento":fecha_lanzamiento,#siempre va a ser igual
+                        "fecha_vencimiento":fecha_vencimientoN,
                         "fecha_modificacion":fecha_modificacion,#siempre va a ser igual
                         "empresa":empresa,
                         'message': 'Cambios realizados con Exito'
