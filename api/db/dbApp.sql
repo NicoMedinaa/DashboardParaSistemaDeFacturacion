@@ -226,8 +226,6 @@ CREATE TABLE productos (
     fecha_vencimiento DATE,
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     empresa VARCHAR(50),
-    id_proveedor INT,
     FOREIGN KEY (categoria) REFERENCES categoria(nombre) ,
     FOREIGN KEY (empresa) REFERENCES empresa(nombre),
-    FOREIGN KEY (id_proveedor) REFERENCES proveedor(id)
 );
