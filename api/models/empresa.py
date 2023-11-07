@@ -13,7 +13,6 @@ class Empresa():
             "direccion" : self._direccion,
             "telefono" : self._telefono,
             "email" : self._email,
-            "descripcion" : self._descripcion,
             "fechaIngreso": self._fechaIngreso,
             "CUIT_CUIL": self._CUIT_CUIL, 
         }
