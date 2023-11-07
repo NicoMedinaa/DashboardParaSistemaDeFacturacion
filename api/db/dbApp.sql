@@ -72,6 +72,16 @@ CREATE TABLE factura (
     fechaVencimiento DATE NOT NULL,
     FOREIGN KEY (cliente) REFERENCES cliente(dni)
 );
+CREATE TABLE productofactura (
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    idFactura INT NOT NULL,
+    idProducto INT NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (idFactura) REFERENCES factura(numeroFactura),
+    FOREIGN KEY (idProducto) REFERENCES productos(id)
+);
+
+
 
 -- Crear la tabla de servicios
 CREATE TABLE servicios (
