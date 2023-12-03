@@ -10,6 +10,7 @@ class Productos():
         self._fecha_lanzamiento= row[7]
         self._fecha_vencimiento= row[8]
         self._fecha_modificacion= row[9]
+        self._empresa= row[10]
     def to_json(self):
         return {
             "id" : self._id,
@@ -22,4 +23,5 @@ class Productos():
             "fecha_lanzamiento" : self._fecha_lanzamiento,
             "fecha_vencimiento" : self._fecha_vencimiento,
             "fecha_modificacion" : self._fecha_modificacion,
+            "empresa" : self._empresa,
         }

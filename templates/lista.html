@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <style>
+        th, td {
+    border: 1px solid black; /* Establece un borde sólido de 1 píxel en las celdas de encabezado y datos */
+    padding: 8px; /* Añade espacio entre el contenido de las celdas y el borde */
+        }
+    </style>
+</head>
+<body>
+    <h2>Lista de Productos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+                <th>Fecha de Lanzamiento</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td data-field="nombre">{{ producto.nombre }}</td>
+                    <td data-field="descripcion">{{ producto.descripcion }}</td>
+                    <td data-field="precio">${{ producto.precio }}</td>
+                    <td data-field="stock">{{ producto.stock }}</td>
+                    <td data-field="categoria">{{ producto.categoria }}</td>
+                    <td data-field="proveedor">{{ producto.proveedor }}</td>
+                    <td data-field="fecha_lanzamiento">{{ producto.fecha_lanzamiento }}</td>
+                    <td data-field="fecha_vencimiento">{{ producto.fecha_vencimiento }}</td>
+                    <td>
+                        <button onclick="editarProducto(this)">Editar</button>
+                        <button onclick="eliminarProducto(this)">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>function editarProducto(button) {
+        const row = button.parentElement.parentElement;
+        const fields = row.querySelectorAll('td[data-field]');
+        
+        // Mostrar los campos en elementos de entrada para editar
+        fields.forEach((field) => {
+            const value = field.innerText;
+            const input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.value = value;
+            field.innerHTML = '';
+            field.appendChild(input);
+        });
+
+        // Cambiar el botón "Editar" a "Guardar"
+        button.innerText = 'Guardar';
+        button.onclick = () => guardarProducto(button);
+    }
+
+    function guardarProducto(button) {
+        const row = button.parentElement.parentElement;
+        const fields = row.querySelectorAll('td[data-field]');
+        
+        // Recolectar los datos editados
+        const updatedData = {};
+        fields.forEach((field) => {
+            const input = field.querySelector('input');
+            const fieldName = field.getAttribute('data-field');
+            updatedData[fieldName] = input.value;
+            field.innerHTML = input.value;
+        });
+
+        // Aquí puedes enviar los datos actualizados al servidor (usando fetch, por ejemplo)
+        // Luego, cambia el botón nuevamente a "Editar"
+        button.innerText = 'Editar';
+        button.onclick = () => editarProducto(button);
+    }
+
+    function eliminarProducto(button) {
+        // Lógica para eliminar el producto (puedes usar fetch para enviar una solicitud al servidor)
+        const row = button.parentElement.parentElement;
+        row.remove();
+    }
+    </script>
+</body>
+</html>
